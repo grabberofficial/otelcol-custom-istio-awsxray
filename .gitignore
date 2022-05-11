@@ -28,3 +28,4 @@ istio-*
 
 # Ignore logs
 *.log
+/.idea/
