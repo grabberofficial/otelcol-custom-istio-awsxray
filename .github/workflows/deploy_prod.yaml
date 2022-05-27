@@ -1,0 +1,44 @@
+name: Deploy Prod
+#
+on:
+  workflow_dispatch:
+
+env:
+  ECR: 081239602556.dkr.ecr.eu-central-1.amazonaws.com/polkapad-infrastructure-gear-node
+  ROLE: "arn:aws:iam::081239602556:role/github-ecr-polkapad-infrastructure-gear-node"
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # required to use OIDC authentication
+      contents: read # required to checkout the code from the repo
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: AWS cli install action
+        uses: chrislennon/action-aws-cli@1.1
+
+      - name: Expose git commit data
+        uses: rlespinasse/git-commit-data-action@v1
+        #if: ${{ github.event_name == 'push' }}
+
+      - name: Set env
+        run: |
+          echo "TAG=${ECR}:latest" >> $GITHUB_ENV
+
+      - name: Run build
+        run: ./bin/build.sh -t $TAG
+
+      - name: Configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ env.ROLE }}
+          role-duration-seconds: 900 # the ttl of the session, in seconds.
+          aws-region: eu-central-1 # use your region here.
+
+      - name: ECR login
+        run: aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin $ECR
+
+      - name: Push image
+        run: docker image push $TAG
