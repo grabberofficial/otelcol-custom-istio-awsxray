@@ -11,8 +11,8 @@ on:
   workflow_dispatch:
 
 env:
-  ECR: 081239602556.dkr.ecr.eu-central-1.amazonaws.com/polkapad-otelcol-custom-istio-awsxray
-  ROLE: "arn:aws:iam::081239602556:role/github-ecr-polkapad-otelcol-custom-istio-awsxray"
+  ECR: 081239602556.dkr.ecr.eu-central-1.amazonaws.com/grabberofficial-otelcol-custom-istio-awsxray
+  ROLE: "arn:aws:iam::081239602556:role/github-ecr-grabberofficial-otelcol-custom-istio-awsxray"
 
 jobs:
   docker:
